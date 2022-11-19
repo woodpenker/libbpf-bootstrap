@@ -5,6 +5,7 @@
 #include <sys/resource.h>
 #include <bpf/libbpf.h>
 #include "minimal.skel.h"
+#include "helps.h"
 
 static int libbpf_print_fn(enum libbpf_print_level level, const char *format, va_list args)
 {
@@ -15,6 +16,7 @@ int main(int argc, char **argv)
 {
 	struct minimal_bpf *skel;
 	int err;
+	int pid;
 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 	/* Set up libbpf errors and debug info callback */
@@ -27,13 +29,18 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	/* ensure BPF program only handles write() syscalls from our process */
-	skel->bss->my_pid = getpid();
-
 	/* Load & verify BPF programs */
 	err = minimal_bpf__load(skel);
 	if (err) {
 		fprintf(stderr, "Failed to load and verify BPF skeleton\n");
+		goto cleanup;
+	}
+
+	/* ensure BPF program only handles write() syscalls from our process */
+	pid = getpid();
+	err = SET_RO_ARG(skel, my_pid, pid);
+	if (err < 0) {
+		fprintf(stderr, "Error set arg with pid: %s\n", strerror(err));
 		goto cleanup;
 	}
 

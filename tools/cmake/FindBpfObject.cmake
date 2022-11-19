@@ -163,6 +163,7 @@ macro(bpf_object name input)
   # Build BPF object file
   add_custom_command(OUTPUT ${BPF_O_FILE}
     COMMAND ${BPFOBJECT_CLANG_EXE} -g -O2 -target bpf -D__TARGET_ARCH_${ARCH}
+            ${BPF_LEGACY_MODE}
             ${CLANG_SYSTEM_INCLUDES} -I${GENERATED_VMLINUX_DIR}
             -isystem ${LIBBPF_INCLUDE_DIRS} -c ${BPF_C_FILE} -o ${BPF_O_FILE}
     VERBATIM

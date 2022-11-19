@@ -42,6 +42,11 @@ set(BPFOBJECT_BPFTOOL_EXE ${CMAKE_CURRENT_BINARY_DIR}/bpftool/bpftool)
 set(BPFOBJECT_VMLINUX_H ${CMAKE_CURRENT_SOURCE_DIR}/../../vmlinux/vmlinux.h)
 set(LIBBPF_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/libbpf)
 set(LIBBPF_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/libbpf/libbpf.a)
+if(DEFINED LEGACY)
+  set(BPF_LEGACY_MODE "-DBPF_NO_GLOBAL_DATA")
+  add_definitions(-DBPF_NO_GLOBAL_DATA)
+  message("-- BPF_LEGACY_MODE: ${BPF_LEGACY_MODE}, LEGACY: ${LEGACY}")
+endif()
 find_package(BpfObject REQUIRED)
 
 # Create an executable for each application
